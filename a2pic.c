@@ -47,21 +47,17 @@ process (FILE *f)
 
 	printf ("/* XPM */\n");
 	printf ("static char *apple2[] = {\n");
-	printf ("\"280 192 10 1\",\n");
+	printf ("\"280 192 6 1\",\n");
 	printf ("\"0 c #000000\",\n");
 	printf ("\"1 c #ffffff\",\n");
 
-	printf ("\"g c #008000\",\n");
-	printf ("\"G c #80ff80\",\n");
+	printf ("\"g c #55ff55\",\n");
 
-	printf ("\"p c #400040\",\n");
-	printf ("\"P c #c080c0\",\n");
+	printf ("\"p c #b055b0\",\n");
 
-	printf ("\"r c #800000\",\n");
-	printf ("\"R c #ff8080\",\n");
+	printf ("\"r c #ff5555\",\n");
 
-	printf ("\"b c #000080\",\n");
-	printf ("\"B c #8080ff\",\n");
+	printf ("\"b c #5555ff\",\n");
 
 	for (maj = 0; maj < 24; maj++) {
 		for (min = lines[maj]; min < lines[maj] + 8192; min += 1024) {
@@ -79,12 +75,12 @@ process (FILE *f)
 			if (bits[0] != bits[1]) {
 				if (HIGH (0)) {
 					if (bits[0])
-						printf ("B");
+						printf ("b");
 					else
 						printf ("r");
 				} else {
 					if (bits[0])
-						printf ("P");
+						printf ("p");
 					else
 						printf ("g");
 				}
@@ -96,29 +92,29 @@ process (FILE *f)
 			}
 
 			for (x = 1; x < 279; x++) {
-				if (bits[x] != bits[x-1] ||
+				if (bits[x] != bits[x-1] &&
 				    bits[x] != bits[x+1]) {
 					if (x % 2 == 0) {
 						if (HIGH (x)) {
 							if (bits[x])
-								printf ("B");
+								printf ("b");
 							else
 								printf ("r");
 						} else {
 							if (bits[x])
-								printf ("P");
+								printf ("p");
 							else
 								printf ("g");
 						}
 					} else {
 						if (HIGH (x)) {
 							if (bits[x])
-								printf ("R");
+								printf ("r");
 							else
 								printf ("b");
 						} else {
 							if (bits[x])
-								printf ("G");
+								printf ("g");
 							else
 								printf ("p");
 						}
@@ -134,12 +130,12 @@ process (FILE *f)
 			if (bits[278] != bits[279]) {
 				if (HIGH (279)) {
 					if (bits[279])
-						printf ("R");
+						printf ("r");
 					else
 						printf ("b");
 				} else {
 					if (bits[279])
-						printf ("G");
+						printf ("g");
 					else
 						printf ("p");
 				}
