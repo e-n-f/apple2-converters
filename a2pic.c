@@ -47,25 +47,107 @@ process (FILE *f)
 
 	printf ("/* XPM */\n");
 	printf ("static char *apple2[] = {\n");
-	printf ("\"280 192 2 1\",\n");
+	printf ("\"280 192 10 1\",\n");
 	printf ("\"0 c #000000\",\n");
 	printf ("\"1 c #ffffff\",\n");
+
+	printf ("\"g c #008000\",\n");
+	printf ("\"G c #80ff80\",\n");
+
+	printf ("\"p c #400040\",\n");
+	printf ("\"P c #c080c0\",\n");
+
+	printf ("\"r c #800000\",\n");
+	printf ("\"R c #ff8080\",\n");
+
+	printf ("\"b c #000080\",\n");
+	printf ("\"B c #8080ff\",\n");
 
 	for (maj = 0; maj < 24; maj++) {
 		for (min = lines[maj]; min < lines[maj] + 8192; min += 1024) {
 			int x;
+			char bits[280];
 
 			printf ("\"");
 
-			for (x = min; x < min + 40; x++) {
-				int bit;
+			for (x = 0; x < 280; x++) {
+				bits[x] = (buf[min + x/7] & (1 << (x%7))) != 0;
+			}
 
-				for (bit = 0; bit < 7; bit++) {
-					if (buf[x] & (1 << bit))
+#define HIGH(x) (buf[min + (x)/7] & (1 << 7))
+
+			if (bits[0] != bits[1]) {
+				if (HIGH (0)) {
+					if (bits[0])
+						printf ("B");
+					else
+						printf ("r");
+				} else {
+					if (bits[0])
+						printf ("P");
+					else
+						printf ("g");
+				}
+			} else {
+				if (bits[0])
+					printf ("1");
+				else
+					printf ("0");
+			}
+
+			for (x = 1; x < 279; x++) {
+				if (bits[x] != bits[x-1] ||
+				    bits[x] != bits[x+1]) {
+					if (x % 2 == 0) {
+						if (HIGH (x)) {
+							if (bits[x])
+								printf ("B");
+							else
+								printf ("r");
+						} else {
+							if (bits[x])
+								printf ("P");
+							else
+								printf ("g");
+						}
+					} else {
+						if (HIGH (x)) {
+							if (bits[x])
+								printf ("R");
+							else
+								printf ("b");
+						} else {
+							if (bits[x])
+								printf ("G");
+							else
+								printf ("p");
+						}
+					}
+				} else {
+					if (bits[x])
 						printf ("1");
 					else
 						printf ("0");
 				}
+			}
+
+			if (bits[278] != bits[279]) {
+				if (HIGH (279)) {
+					if (bits[279])
+						printf ("R");
+					else
+						printf ("b");
+				} else {
+					if (bits[279])
+						printf ("G");
+					else
+						printf ("p");
+				}
+			} else {
+				if (bits[279])
+					printf ("1");
+				else
+					printf ("0");
 			}
 
 			printf ("\",\n");
