@@ -13,6 +13,7 @@ process (FILE *f)
 {
 	int maj;
 	int min;
+	int color = 0;
 
 	static int lines[] = {
 		0x000,
@@ -45,19 +46,41 @@ process (FILE *f)
 
 	fread (buf, sizeof (unsigned char), 8192, f);
 
+	for (maj = 0; maj < 24; maj++) {
+		for (min = lines[maj]; min < lines[maj] + 8192; min += 1024) {
+			int x;
+
+			for (x = 0; x < 40; x++)
+				if ((buf[min + x] & 0x80) &&
+				    (buf[min + x] != 0xff) &&
+				    (buf[min + x] != 0x80)) {
+					color = 1;
+					goto colorknown;
+				}
+		}
+	}
+colorknown:
+
 	printf ("/* XPM */\n");
 	printf ("static char *apple2[] = {\n");
-	printf ("\"280 192 6 1\",\n");
+
+	if (color)
+		printf ("\"280 192 6 1\",\n");
+	else
+		printf ("\"280 192 2 1\",\n");
+
 	printf ("\"0 c #000000\",\n");
 	printf ("\"1 c #ffffff\",\n");
 
-	printf ("\"g c #80ff80\",\n");
+	if (color) {
+		printf ("\"g c #40ff40\",\n");
+		printf ("\"p c #c000c0\",\n");
+		printf ("\"r c #ff4040\",\n");
+		printf ("\"b c #4040ff\",\n");
+	}
 
-	printf ("\"p c #ff00ff\",\n");
-
-	printf ("\"r c #ffff00\",\n");
-
-	printf ("\"b c #8080ff\",\n");
+	if (color)
+		fprintf (stderr, "(color)\n");
 
 	for (maj = 0; maj < 24; maj++) {
 		for (min = lines[maj]; min < lines[maj] + 8192; min += 1024) {
@@ -72,7 +95,7 @@ process (FILE *f)
 
 #define HIGH(x) (buf[min + (x)/7] & (1 << 7))
 
-			if (bits[0] != bits[1]) {
+			if (color && (bits[0] != bits[1])) {
 				if (HIGH (0)) {
 					if (bits[0])
 						printf ("b");
@@ -92,7 +115,8 @@ process (FILE *f)
 			}
 
 			for (x = 1; x < 279; x++) {
-				if (bits[x] != bits[x-1] &&
+				if (color &&
+				    bits[x] != bits[x-1] &&
 				    bits[x] != bits[x+1]) {
 					if (x % 2 == 0) {
 						if (HIGH (x)) {
@@ -127,7 +151,7 @@ process (FILE *f)
 				}
 			}
 
-			if (bits[278] != bits[279]) {
+			if (color && (bits[278] != bits[279])) {
 				if (HIGH (279)) {
 					if (bits[279])
 						printf ("r");
