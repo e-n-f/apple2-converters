@@ -51,13 +51,13 @@ process (FILE *f)
 	printf ("\"0 c #000000\",\n");
 	printf ("\"1 c #ffffff\",\n");
 
-	printf ("\"g c #55ff55\",\n");
+	printf ("\"g c #80ff80\",\n");
 
-	printf ("\"p c #b055b0\",\n");
+	printf ("\"p c #ff00ff\",\n");
 
-	printf ("\"r c #ff5555\",\n");
+	printf ("\"r c #ffff00\",\n");
 
-	printf ("\"b c #5555ff\",\n");
+	printf ("\"b c #8080ff\",\n");
 
 	for (maj = 0; maj < 24; maj++) {
 		for (min = lines[maj]; min < lines[maj] + 8192; min += 1024) {
