@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <string.h>
 
 char **av;
 
 void
 usage (char *s)
 {
-	fprintf (stderr, "Usage: %s [file]\n");
+	fprintf (stderr, "Usage: %s [file]\n", s);
 }
 
 void
