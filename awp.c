@@ -17,6 +17,9 @@ process (FILE *f, char *name)
 	unsigned char header[300];
 	unsigned char rec[2];
 
+	printf("<html>\n");
+	printf("<pre>\n");
+
 	int bold = 0, under = 0, sub = 0, super = 0;
 
 	if (fread (header, sizeof (unsigned char), 300, f) != 300) {
@@ -56,40 +59,70 @@ process (FILE *f, char *name)
 				printf (" ");
 
 			for (i = 2; i < (line[1] & 0x7f) + 2; i++) {
-				if (line[i] == 1)
-					bold = 1;
-				else if (line[i] == 2)
-					bold = 0;
-				else if (line[i] == 3)
-					super = 1;
-				else if (line[i] == 4)
-					super = 0;
-				else if (line[i] == 5)
-					sub = 1;
-				else if (line[i] == 6)
-					sub = 0;
-				else if (line[i] == 7)
-					under = 1;
-				else if (line[i] == 8)
-					under = 0;
-				else if (line[i] == 11)
-					printf (" ");  /* sticky space */
-				else if (line[i] == 0x16)
-					printf (" ");  /* tab */
-				else if (line[i] == 0x17)
-					printf (" ");  /* tab spacer */
-				else if (line[i] >= 32) {
-					if (bold)
-						printf ("%c\b", line[i]);
-					if (under)
-						printf ("_\b");
-
-					printf ("%c", line[i]);
+				if (line[i] == 1 && bold == 0) {
+					printf("<b>");
+					bold++;
+				} else if (line[i] == 2 && bold > 0) {
+					printf("</b>");
+					bold--;
+				} else if (line[i] == 3 && super == 0) {
+					printf("<sup>");
+					super++;
+				} else if (line[i] == 4 && super > 0) {
+					printf("</sup>");
+					super--;
+				} else if (line[i] == 5 && sub == 0) {
+					printf("<sub>");
+					sub++;
+				} else if (line[i] == 6 && sub > 0) {
+					printf("</sub>");
+					sub--;
+				} else if (line[i] == 7 && under == 0) {
+					printf("<u>");
+					under++;
+				} else if (line[i] == 8 && under > 0) {
+					printf("</u>");
+					under--;
+				} else if (line[i] == 11) {
+					printf ("&nbsp;");  /* sticky space */
+				} else if (line[i] == 0x16) {
+					printf ("&nbsp;");  /* tab */
+				} else if (line[i] == 0x17) {
+					printf ("&nbsp;");  /* tab spacer */
+				} else if (line[i] >= 32) {
+					if (line[i] == '&') {
+						printf("&amp;");
+					} else if (line[i] == '<') {
+						printf("&lt;");
+					} else if (line[i] == '>') {
+						printf("&gt;");
+					} else {
+						printf ("%c", line[i]);
+					}
 				}
 			}
 
 			free (line);
 			printf ("\n");
+
+			if (line[1] & 0x80) {
+				while (bold > 0) {
+					printf("</b>");
+					bold--;
+				}
+				while (under > 0) {
+					printf("</u>");
+					under--;
+				}
+				while (super > 0) {
+					printf("</sup>");
+					super--;
+				}
+				while (sub > 0) {
+					printf("</sub>");
+					sub--;
+				}
+			}
 		} else if (rec[1] = 0xd0) {
 			int i;
 
@@ -98,9 +131,29 @@ process (FILE *f, char *name)
 
 			printf ("\n");
 
+			while (bold > 0) {
+				printf("</b>");
+				bold--;
+			}
+			while (under > 0) {
+				printf("</u>");
+				under--;
+			}
+			while (super > 0) {
+				printf("</sup>");
+				super--;
+			}
+			while (sub > 0) {
+				printf("</sub>");
+				sub--;
+			}
+
 			bold = under = super = sub = 0;
 		}
 	}
+
+	printf("</pre>");
+	printf("</html>");
 }
 
 int
