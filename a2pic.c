@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 
 void
 usage (char *s)
 {
-	fprintf (stderr, "Usage: %s [file]\n");
+	fprintf (stderr, "Usage: %s [file]\n", s);
 }
 
 void

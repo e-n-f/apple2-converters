@@ -123,7 +123,7 @@ process (FILE *f, char *name)
 					sub--;
 				}
 			}
-		} else if (rec[1] = 0xd0) {
+		} else if (rec[1] == 0xd0) {
 			int i;
 
 			for (i = 0; i < rec[0]; i++)
