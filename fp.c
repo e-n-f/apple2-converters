@@ -145,8 +145,8 @@ process (FILE *f, char *name)
 		if (a == 0 && b == 0) {
 			int c = getc(f);
 			if (c != EOF) {
-				fprintf(stderr, "More data follows 0/0 EOF tag\n");
-				exit(EXIT_FAILURE);
+				// fprintf(stderr, "More data follows 0/0 EOF tag\n");
+				// exit(EXIT_FAILURE);
 			}
 			return;
 		}
