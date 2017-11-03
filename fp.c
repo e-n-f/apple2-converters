@@ -129,6 +129,8 @@ token (int c)
 void
 process (FILE *f, char *name)
 {
+	int oldptr = 0;
+
 	while (1) {
 		int a, b;
 		int c;
@@ -136,16 +138,37 @@ process (FILE *f, char *name)
 		a = getc (f);  /* useless (to us) pointer to next line */
 		b = getc (f);  /* high half of pointer */
 
-		if (a == EOF || b == EOF)
+		if (a == EOF || b == EOF) {
+			fprintf(stderr, "Unexpected EOF\n");
+			exit(EXIT_FAILURE);
+		}
+		if (a == 0 && b == 0) {
+			int c = getc(f);
+			if (c != EOF) {
+				fprintf(stderr, "More data follows 0/0 EOF tag\n");
+				exit(EXIT_FAILURE);
+			}
 			return;
-		if (a == 0 && b == 0)
-			return;
+		}
+
+		int ptr = a + 256 * b;
+		if (ptr < 2048) {
+			fprintf(stderr, "Impossible pointer %d\n", ptr);
+			exit(EXIT_FAILURE);
+		}
+		if (ptr < oldptr) {
+			fprintf(stderr, "Pointer %d < old %d\n", ptr, oldptr);
+			exit(EXIT_FAILURE);
+		}
+		oldptr = ptr;
 
 		a = getc (f);  /* line number */
 		b = getc (f);  /* high half of line number */
 
-		if (a == EOF || b == EOF)
-			return;
+		if (a == EOF || b == EOF) {
+			fprintf(stderr, "Unexpected EOF\n");
+			exit(EXIT_FAILURE);
+		}
 
 		printf ("%d ", a + 256 * b);
 
@@ -157,6 +180,11 @@ process (FILE *f, char *name)
 				printf (" %s ", token (c));
 			else
 				printf ("%c", c);
+		}
+
+		if (c == EOF) {
+			fprintf(stderr, "Unexpected EOF\n");
+			exit(EXIT_FAILURE);
 		}
 
 		printf ("\n");
